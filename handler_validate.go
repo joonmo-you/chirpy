@@ -3,6 +3,8 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"slices"
+	"strings"
 )
 
 const MaxChirpLength = 140
@@ -12,7 +14,7 @@ func handlerChirpsValidate(w http.ResponseWriter, r *http.Request) {
 		Body string `json:"body"`
 	}
 	type payload struct {
-		Valid bool `json:"valid"`
+		CleanedBody string `json:"cleaned_body"`
 	}
 	params := parameters{}
 	decoder := json.NewDecoder(r.Body)
@@ -25,5 +27,13 @@ func handlerChirpsValidate(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusBadRequest, "Chirp is too long", nil)
 		return
 	}
-	respondWithJSON(w, http.StatusOK, payload{Valid: true})
+	cleanedBody := []string{}
+	for _, word := range strings.Split(params.Body, " ") {
+		if slices.Contains([]string{"kerfuffle", "sharbert", "fornax"}, strings.ToLower(word)) {
+			cleanedBody = append(cleanedBody, "****")
+		} else {
+			cleanedBody = append(cleanedBody, word)
+		}
+	}
+	respondWithJSON(w, http.StatusOK, payload{CleanedBody: strings.Join(cleanedBody, " ")})
 }
