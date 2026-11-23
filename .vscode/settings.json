@@ -1,0 +1,13 @@
+{
+  "[go]": {
+    "editor.defaultFormatter": "golang.go",
+    "editor.formatOnSave": true
+  },
+  "[sql]": {
+    "editor.defaultFormatter": "adpyke.vscode-sql-formatter",
+    "editor.formatOnSave": false
+  },
+  "[pgsql-migration-oracle]": {
+    "editor.defaultFormatter": "ckolkman.vscode-postgres"
+  }
+}
