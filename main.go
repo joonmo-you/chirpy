@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"sync/atomic"
 
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
@@ -19,6 +20,8 @@ type apiConfig struct {
 }
 
 func main() {
+	godotenv.Load()
+
 	apiCfg := apiConfig{
 		fileserverHits: atomic.Int32{},
 	}
