@@ -20,11 +20,16 @@ const (
 
 type apiConfig struct {
 	fileserverHits atomic.Int32
+	platform       string
 	db             *database.Queries
 }
 
 func main() {
 	godotenv.Load()
+	platform := os.Getenv("PLATFORM")
+	if platform == "" {
+		log.Fatal("PLATFORM must be set")
+	}
 	dbURL := os.Getenv("DB_URL")
 	if dbURL == "" {
 		log.Fatal("DB_URL must be set")
@@ -36,6 +41,7 @@ func main() {
 	dbQueries := database.New(db)
 	apiCfg := apiConfig{
 		fileserverHits: atomic.Int32{},
+		platform:       platform,
 		db:             dbQueries,
 	}
 	mux := http.NewServeMux()
@@ -44,6 +50,7 @@ func main() {
 	mux.HandleFunc("GET /admin/metrics", apiCfg.handlerMetrics)
 	mux.HandleFunc("POST /admin/reset", apiCfg.handlerReset)
 	mux.HandleFunc("POST /api/validate_chirp", handlerChirpsValidate)
+	apiCfg.registerRoutes(mux)
 	s := &http.Server{
 		Addr:    fmt.Sprintf(":%d", Port),
 		Handler: mux,
